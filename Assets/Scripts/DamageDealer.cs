@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class DamageDealer : MonoBehaviour
 {
-    public int health;
+    public int TotalHealth;
 
     public void TakeDamage(int Damage)
     {
 
-        this.health -= Damage;
+        this.TotalHealth -= Damage;
 
     }
 
     public void SetHealth()
     {
-        this.health = health;
+        this.TotalHealth = TotalHealth;
     }
 
 }

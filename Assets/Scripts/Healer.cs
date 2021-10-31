@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class Healer : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int TotalHealth;
+    public int TotalMana;
 
-    // Update is called once per frame
-    void Update()
+    // Start is called before the first frame update
+    public void heal(int heal, int mana)
     {
+        this.TotalHealth += heal;
+        this.TotalMana -= mana;
         
     }
 }
