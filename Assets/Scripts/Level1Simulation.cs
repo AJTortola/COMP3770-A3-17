@@ -25,9 +25,9 @@ public class Level1Simulation : MonoBehaviour {
     DamageDealer bossScript, warriorScript, rogueScript, mageScript, druidScript;
     Priest priestScript;
 
-    string path = "Assets/Resources/timeSteps.csv";
+    string path = "Assets/Scripts/timeSteps.csv";
     StreamWriter writer;
-    string pathDMG = "Assets/Resources/DamageDealtL1.csv";
+    string pathDMG = "Assets/Scripts/DamageDealtL1.csv";
     StreamWriter writerDMG;
 
     int timeStepCounter = 0;
@@ -90,7 +90,7 @@ public class Level1Simulation : MonoBehaviour {
 
 
                 //Write the score to Level2Score.csv if it is a high score
-                String scorePath = "Assets/Resources/Level2Score.csv";
+                String scorePath = "Assets/Scripts/Level2Score.csv";
 
                 StreamReader reader = new StreamReader(scorePath);
                 int recordDBP, recordDBB;   //Record damage by party, damage by boss
