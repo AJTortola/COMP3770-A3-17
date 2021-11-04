@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -6,7 +6,8 @@ using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class Level1Simulation : MonoBehaviour {
+public class Level2Simulation : MonoBehaviour
+{
     //Actual character objects
     public GameObject boss, warrior, rogue, mage, druid, priest;
     //Game Object names in Unity
@@ -16,7 +17,7 @@ public class Level1Simulation : MonoBehaviour {
     public String mageObjectName = "Mage";
     public String druidObjectName = "Druid";
     public String priestObjectName = "Priest";
-    public int wDMG, rDMG, mDMG, dDMG, pHeal;
+    public int wDMG, rDMG, mDMG, dDMG, pHeal, pHealL2;
     public int bossTotal, wTotal, rTotal, mTotal, dTotal;
     public Text dmgLabel, bossTotalText, wTotalText, rTotalText, mTotalText, dTotalText;
     public Text healthLabel, bossHealth, wHealth, rHealth, mHealth, dHealth, pHealth;
@@ -25,9 +26,9 @@ public class Level1Simulation : MonoBehaviour {
     DamageDealer bossScript, warriorScript, rogueScript, mageScript, druidScript;
     Priest priestScript;
 
-    string path = "Assets/CSV/timeStepsL1.csv";
+    string path = "Assets/CSV/timeStepsL2.csv";
     StreamWriter writer;
-    string pathDMG = "Assets/CSV/DamageDealtL1.csv";
+    string pathDMG = "Assets/CSV/DamageDealtL2.csv";
     StreamWriter writerDMG;
 
     int timeStepCounter = 0;
@@ -37,7 +38,8 @@ public class Level1Simulation : MonoBehaviour {
     private int dmgByBoss = 0, dmgByParty = 0;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
         //Open the writer
         writer = new StreamWriter(path);
         writerDMG = new StreamWriter(pathDMG);
@@ -72,18 +74,22 @@ public class Level1Simulation : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
         //Increment
         timeStepCounter++;
         //Check the health of the character via the script attached to it
-        if (!isSimulationOver()) {
+        if (!isSimulationOver())
+        {
             TimeStepPrint();
             //Do all character actions (damage and healing)
             doCharacterActions();
-        } 
-        else {
+        }
+        else
+        {
             Debug.Log("Character is dead");
-            if (printOneTime) {
+            if (printOneTime)
+            {
                 printOneTime = false;
                 TimeStepPrint();
                 writer.Close();
@@ -91,7 +97,7 @@ public class Level1Simulation : MonoBehaviour {
 
 
                 //Write the score to Level2Score.csv if it is a high score
-                String scorePath = "Assets/CSV/Level1Score.csv";
+                String scorePath = "Assets/CSV/Level2Score.csv";
 
                 StreamReader reader = new StreamReader(scorePath);
                 int recordDBP, recordDBB;   //Record damage by party, damage by boss
@@ -103,10 +109,12 @@ public class Level1Simulation : MonoBehaviour {
 
                 Debug.Log("Old records: DBP: " + recordDBP + ", DBB: " + recordDBB);
 
-                if (dmgByParty > recordDBP) {
+                if (dmgByParty > recordDBP)
+                {
                     recordDBP = dmgByParty;
                 }
-                if (dmgByBoss > recordDBB) {
+                if (dmgByBoss > recordDBB)
+                {
                     recordDBB = dmgByBoss;
                 }
 
@@ -122,7 +130,7 @@ public class Level1Simulation : MonoBehaviour {
                 scoreWriter.Close();
 
                 //Loads in level over scene and unloads current level scene
-               
+
                 SceneManager.LoadScene("Level Over");
             }
         }
@@ -131,27 +139,31 @@ public class Level1Simulation : MonoBehaviour {
     }
 
     //Every timestep, print the timestep # and all character healths to the csv file
-    void TimeStepPrint() {
+    void TimeStepPrint()
+    {
         writer.WriteLine("" + timeStepCounter + "," + bossScript.getHealth() + "," + warriorScript.getHealth() + "," + rogueScript.getHealth() + "," + mageScript.getHealth() + "," + druidScript.getHealth() + "," + priestScript.getHealth());
         writerDMG.WriteLine("" + timeStepCounter + "," + dmgByBoss + "," + wDMG + "," + rDMG + "," + mDMG + "," + dDMG + "," + pHeal);
     }
 
     //If any character has no health, simulation is over
-    Boolean isSimulationOver() {
-        if (bossScript.getHealth() <= 0 || warriorScript.getHealth() <= 0 || rogueScript.getHealth() <= 0 || mageScript.getHealth() <= 0 || druidScript.getHealth() <= 0 || priestScript.getHealth() <= 0) {
+    Boolean isSimulationOver()
+    {
+        if (bossScript.getHealth() <= 0 || warriorScript.getHealth() <= 0 || rogueScript.getHealth() <= 0 || mageScript.getHealth() <= 0 || druidScript.getHealth() <= 0 || priestScript.getHealth() <= 0)
+        {
             return true;
         }
         return false;
     }
 
     //This sets the health of all the characters to their starting value when it is called
-    public void instantiateCharacterAttributes() {
+    public void instantiateCharacterAttributes()
+    {
         //Constant values in case they need to be changed
         int bossHealthMax = 5000;
         int warriorHealthMax = 3000;
         int rogueHealthMax = 1500;
         int mageHealthMax = 1000;
-        int druidHealthMax = 1250;     
+        int druidHealthMax = 1250;
         int priestHealthMax = 900;
         int priestManaMax = 1000;
 
@@ -168,7 +180,8 @@ public class Level1Simulation : MonoBehaviour {
     }
 
     //Do all the damage dealing and priest healing
-    public void doCharacterActions() {
+    public void doCharacterActions()
+    {
         //Hold the value for the damage to deal to a character
         int tempDmg;
 
@@ -228,37 +241,60 @@ public class Level1Simulation : MonoBehaviour {
         //Determine who the priest will heal with his function
         int charCode = priestScript.smallHeal();
 
+        //If tank is under 1500 health, then use a random heal at no mana cost
+        if (warriorScript.getHealth() <= 1500)
+        {
+            if (priestScript.healType() == 1)
+            {
+                rogueScript.heal(15);
+                pHealL2 = 1;
+            }
+
+            if (priestScript.healType() == 2)
+            {
+                rogueScript.heal(25);
+                pHealL2 = 1;
+            }
+        }
+
         if (charCode == 1)      //Rogue
         {
             rogueScript.heal(15);
             rHealth.text = "Rogue: " + rogueScript.getHealth().ToString();
             pHeal = 1;
-        } else if (charCode == 2) //Mage
-          {
+        }
+        else if (charCode == 2) //Mage
+        {
             mageScript.heal(15);
             mHealth.text = "Mage: " + mageScript.getHealth().ToString();
             pHeal = 1;
-        } else if (charCode == 3) //Druid
-          {
+        }
+        else if (charCode == 3) //Druid
+        {
             druidScript.heal(15);
             dHealth.text = "Druid: " + druidScript.getHealth().ToString();
             pHeal = 1;
-        } else if (charCode == 4 || charCode == 5) //Priest. Gets double odds
-          {
+        }
+        else if (charCode == 4 || charCode == 5) //Priest. Gets double odds
+        {
             priestScript.heal(15);
             pHealth.text = "Priest: " + priestScript.getHealth().ToString();
             pHeal = 1;
-        } else        //Got a -1 as a value, so don't heal anyone there's not enough mana
-          {
+        }
+        else        //Got a -1 as a value, so don't heal anyone there's not enough mana
+        {
             Debug.Log("No mana for small heal");
         }
 
         //Try do big heal on warrior
-        if (priestScript.bigHeal()) {
+        if (priestScript.bigHeal())
+        {
             warriorScript.heal(25);
             wHealth.text = "Warrior: " + warriorScript.getHealth().ToString();
             pHeal = 1;
-        } else {
+        }
+        else
+        {
             Debug.Log("No mana for big heal");
         }
 
