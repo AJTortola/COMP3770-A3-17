@@ -80,7 +80,8 @@ public class Level1Simulation : MonoBehaviour {
             TimeStepPrint();
             //Do all character actions (damage and healing)
             doCharacterActions();
-        } else {
+        } 
+        else {
             Debug.Log("Character is dead");
             if (printOneTime) {
                 printOneTime = false;
@@ -90,7 +91,7 @@ public class Level1Simulation : MonoBehaviour {
 
 
                 //Write the score to Level2Score.csv if it is a high score
-                String scorePath = "Assets/Scripts/Level2Score.csv";
+                String scorePath = "Assets/Scripts/Level1Score.csv";
 
                 StreamReader reader = new StreamReader(scorePath);
                 int recordDBP, recordDBB;   //Record damage by party, damage by boss
@@ -121,9 +122,8 @@ public class Level1Simulation : MonoBehaviour {
                 scoreWriter.Close();
 
                 //Loads in level over scene and unloads current level scene
-                SceneManager.UnloadSceneAsync("Level 1");
-                SceneManager.LoadSceneAsync("Level Over");
-                SceneManager.SetActiveScene(SceneManager.GetSceneByName("Level Over"));
+               
+                SceneManager.LoadScene("Level Over");
             }
         }
 
@@ -147,12 +147,12 @@ public class Level1Simulation : MonoBehaviour {
     //This sets the health of all the characters to their starting value when it is called
     public void instantiateCharacterAttributes() {
         //Constant values in case they need to be changed
-        int bossHealthMax = 4500;
+        int bossHealthMax = 5000;
         int warriorHealthMax = 3000;
-        int rogueHealthMax = 1000;
+        int rogueHealthMax = 1500;
         int mageHealthMax = 1000;
-        int druidHealthMax = 1000;
-        int priestHealthMax = 1000;
+        int druidHealthMax = 1250;     
+        int priestHealthMax = 900;
         int priestManaMax = 1000;
 
         //Set health values
@@ -172,8 +172,8 @@ public class Level1Simulation : MonoBehaviour {
         //Hold the value for the damage to deal to a character
         int tempDmg;
 
-        //Deal damage to Warrior from the Boss
-        tempDmg = bossScript.calcDamageToDeal(45, 56);
+        //Deal damage to tank from the Boss
+        tempDmg = bossScript.calcDamageToDeal(40, 51);
         warriorScript.takeDamage(tempDmg);
         wHealth.text = "Warrior: " + warriorScript.getHealth().ToString();
         dmgByBoss += tempDmg;
@@ -195,21 +195,21 @@ public class Level1Simulation : MonoBehaviour {
         bossTotalText.text = "Boss: " + dmgByBoss.ToString();
 
         //Deal damage to boss from damage dealers
-        wDMG = 5;
+        wDMG = warriorScript.calcDamageToDeal(5, 11);
         bossScript.takeDamage(wDMG);   //From warrior
         bossHealth.text = "Boss: " + bossScript.getHealth().ToString();
         wTotal += wDMG;
         dmgByParty += wDMG;
         wTotalText.text = "Warrior: " + wTotal.ToString();
 
-        rDMG = rogueScript.calcDamageToDeal(15, 21);
+        rDMG = rogueScript.calcDamageToDeal(15, 26);
         bossScript.takeDamage(rDMG);
         bossHealth.text = "Boss: " + bossScript.getHealth().ToString();
         rTotal += rDMG;
         dmgByParty += rDMG;
         rTotalText.text = "Rogue: " + rTotal.ToString();
 
-        mDMG = mageScript.calcDamageToDeal(1, 31);
+        mDMG = mageScript.calcDamageToDeal(5, 31);
         bossScript.takeDamage(mDMG);
         bossHealth.text = "Boss: " + bossScript.getHealth().ToString();
         mTotal += mDMG;
@@ -255,14 +255,14 @@ public class Level1Simulation : MonoBehaviour {
 
         //Try do big heal on warrior
         if (priestScript.bigHeal()) {
-            warriorScript.heal(20);
+            warriorScript.heal(25);
             wHealth.text = "Warrior: " + warriorScript.getHealth().ToString();
-            pHeal = 2;
+            pHeal = 1;
         } else {
             Debug.Log("No mana for big heal");
         }
 
         //Regen priest mana
-        priestScript.regenMana(2);
+        priestScript.regenMana(3);
     }
 }
